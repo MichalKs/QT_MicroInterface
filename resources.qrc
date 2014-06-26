@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>images/icon-exit.png</file>
+        <file>images/klaasvangend_processor_idle.png</file>
+        <file>images/Machovka_chip.png</file>
+        <file>images/preferences-system.png</file>
+    </qresource>
+</RCC>
