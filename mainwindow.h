@@ -3,8 +3,9 @@
 
 #include <QMainWindow>
 #include "ui_mainwindow.h"
+#include <QSerialPort>
 
-class QSerialPort;
+
 
 class MainWindow : public QMainWindow, public Ui::MainWindow
 {
@@ -12,7 +13,11 @@ class MainWindow : public QMainWindow, public Ui::MainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    ~MainWindow(void);
+
+private slots:
+    void sendData(void);
+    void handleError(QSerialPort::SerialPortError error);
 
 private:
     QSerialPort* serial;
