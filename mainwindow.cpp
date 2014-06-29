@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 #include <QSerialPort>
 #include <QMessageBox>
+#include <QDebug>
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
@@ -11,16 +13,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
     connect(sendFrameButton, SIGNAL(clicked()), this, SLOT(sendData()));
+
     serial = new QSerialPort(this);
+    connect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
     connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
             SLOT(handleError(QSerialPort::SerialPortError)));
-}
 
-MainWindow::~MainWindow(void) {
-
-}
-
-void MainWindow::sendData(void) {
 
     serial->setPortName("ttyUSB0");
     serial->setBaudRate(QSerialPort::Baud9600);
@@ -36,15 +34,30 @@ void MainWindow::sendData(void) {
         QMessageBox::critical(this, tr("Error"), serial->errorString());
     }
 
+}
+
+MainWindow::~MainWindow(void) {
+    serial->close();
+}
+
+void MainWindow::sendData(void) {
 
     QByteArray a("Hello\n");
     serial->write(a);
     serial->waitForBytesWritten(-1);
 
-    serial->close();
-
 }
 
+void MainWindow::readData(void) {
+    QByteArray data = serial->readLine();
+    rxData.append(data);
+
+    if (*(data.data()) == '\n') {
+        std::cout << "Hello: " << rxData.data() << std::endl;
+        rxData.clear();
+    }
+
+}
 
 void MainWindow::handleError(QSerialPort::SerialPortError error)
 {

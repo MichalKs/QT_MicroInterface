@@ -18,9 +18,11 @@ public:
 private slots:
     void sendData(void);
     void handleError(QSerialPort::SerialPortError error);
+    void readData(void);
 
 private:
     QSerialPort* serial;
+    QByteArray rxData;
 };
 
 #endif // MAINWINDOW_H
