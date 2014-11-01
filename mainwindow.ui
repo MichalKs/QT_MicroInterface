@@ -30,8 +30,8 @@
    <widget class="QPushButton" name="sendFrameButton">
     <property name="geometry">
      <rect>
-      <x>370</x>
-      <y>290</y>
+      <x>640</x>
+      <y>140</y>
       <width>110</width>
       <height>30</height>
      </rect>
@@ -43,8 +43,8 @@
    <widget class="QPushButton" name="quitButton">
     <property name="geometry">
      <rect>
-      <x>370</x>
-      <y>330</y>
+      <x>640</x>
+      <y>180</y>
       <width>110</width>
       <height>30</height>
      </rect>
@@ -58,8 +58,8 @@
      <rect>
       <x>20</x>
       <y>140</y>
-      <width>261</width>
-      <height>291</height>
+      <width>581</width>
+      <height>411</height>
      </rect>
     </property>
    </widget>
