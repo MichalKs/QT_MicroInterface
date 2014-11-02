@@ -14,7 +14,8 @@ public:
   ~MainWindow(void);
 
 private slots:
-  void sendData(void);
+  void serialConnect();
+//  void sendData(void);
   void handleError(QSerialPort::SerialPortError error);
   void readData(void);
 
