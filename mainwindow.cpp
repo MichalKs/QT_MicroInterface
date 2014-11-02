@@ -22,31 +22,34 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 }
 
 MainWindow::~MainWindow(void) {
+  if (serial) {
     serial->close();
+  }
+
 }
 
 void MainWindow::serialConnect(void) {
 
-    serial = new QSerialPort(this);
+  serial = new QSerialPort(this);
 
-    connect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
-    connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
-            SLOT(handleError(QSerialPort::SerialPortError)));
+  connect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
+  connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
+          SLOT(handleError(QSerialPort::SerialPortError)));
 
 
-    serial->setPortName("ttyUSB0");
-    serial->setBaudRate(QSerialPort::Baud115200);
-    serial->setDataBits(QSerialPort::Data8);
-    serial->setParity(QSerialPort::NoParity);
-    serial->setStopBits(QSerialPort::OneStop);
-    serial->setFlowControl(QSerialPort::NoFlowControl);
+  serial->setPortName("ttyUSB0");
+  serial->setBaudRate(QSerialPort::Baud115200);
+  serial->setDataBits(QSerialPort::Data8);
+  serial->setParity(QSerialPort::NoParity);
+  serial->setStopBits(QSerialPort::OneStop);
+  serial->setFlowControl(QSerialPort::NoFlowControl);
 
-    if (serial->open(QIODevice::ReadWrite)) {
+  if (serial->open(QIODevice::ReadWrite)) {
 
-    } else {
+  } else {
 
-        QMessageBox::critical(this, tr("Error"), serial->errorString());
-    }
+      QMessageBox::critical(this, tr("Error"), serial->errorString());
+  }
 }
 /**
  * @brief MainWindow::readData Reads data from serial device
