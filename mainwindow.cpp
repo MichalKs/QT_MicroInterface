@@ -26,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   connect(ledOnButton, SIGNAL(clicked()), this, SLOT(turnOnLED()));
   connect(ledOffButton, SIGNAL(clicked()), this, SLOT(turnOffLED()));
 
+  connect(dataToSend, SIGNAL(returnPressed()), sendFrameButton, SLOT(click()));
+
   // Create the serial port
   serial = new QSerialPort(this);
 
@@ -107,16 +109,12 @@ void MainWindow::readData(void) {
 
 void MainWindow::sendData(void) {
 
-  static bool toggle;
   QByteArray tmp;
 
-  toggle = !toggle;
+  QString str = dataToSend->text();
 
-  if (toggle) {
-    tmp.append(":LED0 ON\r");
-  } else {
-    tmp.append(":LED0 OFF\r");
-  }
+  tmp.append(str);
+  tmp.append("\r");
 
   qint64 ret = serial->write(tmp);
   if (ret == -1) {
@@ -129,8 +127,13 @@ void MainWindow::sendData(void) {
 
 void MainWindow::turnOffLED(void) {
 
+  int led = ledCombo->currentIndex();
+
   QByteArray tmp;
-  tmp.append(":LED0 OFF\r");
+  tmp.append(":LED ");
+  tmp.append(QString::number(led));
+  tmp.append(" OFF\r");
+
   qint64 ret = serial->write(tmp);
   if (ret == -1) {
     qDebug() << "Error sending data";
@@ -141,8 +144,13 @@ void MainWindow::turnOffLED(void) {
 
 void MainWindow::turnOnLED(void) {
 
+  int led = ledCombo->currentIndex();
+
   QByteArray tmp;
-  tmp.append(":LED0 ON\r");
+  tmp.append(":LED ");
+  tmp.append(QString::number(led));
+  tmp.append(" ON\r");
+
   qint64 ret = serial->write(tmp);
   if (ret == -1) {
     qDebug() << "Error sending data";
