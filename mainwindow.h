@@ -15,13 +15,17 @@ public:
 
 private slots:
   void serialConnect();
-//  void sendData(void);
+  void serialDisconnect();
   void handleError(QSerialPort::SerialPortError error);
   void readData(void);
+  void sendData(void);
+  void turnOnLED(void);
+  void turnOffLED(void);
 
 private:
   QSerialPort* serial;
-  QByteArray rxData;
+  QByteArray rxData; // data received from serial port
+  QByteArray txData; // data transmitted to serial port
 };
 
 #endif // MAINWINDOW_H

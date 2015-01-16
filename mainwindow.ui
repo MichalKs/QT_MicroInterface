@@ -47,7 +47,7 @@
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <property name="tabsClosable">
          <bool>false</bool>
@@ -56,16 +56,65 @@
          <bool>false</bool>
         </property>
         <widget class="QWidget" name="ledTab">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="autoFillBackground">
           <bool>false</bool>
          </property>
          <attribute name="title">
           <string>LED</string>
          </attribute>
+         <widget class="QPushButton" name="ledOffButton">
+          <property name="geometry">
+           <rect>
+            <x>30</x>
+            <y>160</y>
+            <width>110</width>
+            <height>30</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>LED OFF</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="ledCombo">
+          <property name="geometry">
+           <rect>
+            <x>40</x>
+            <y>60</y>
+            <width>92</width>
+            <height>30</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>LED0</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>LED1</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QPushButton" name="ledOnButton">
+          <property name="geometry">
+           <rect>
+            <x>30</x>
+            <y>120</y>
+            <width>110</width>
+            <height>30</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>LED ON</string>
+          </property>
+         </widget>
         </widget>
         <widget class="QWidget" name="sdTab">
          <property name="enabled">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <attribute name="title">
           <string>SD</string>
@@ -78,14 +127,41 @@
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <widget class="QLabel" name="label">
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLabel" name="txLabel">
+              <property name="contextMenuPolicy">
+               <enum>Qt::PreventContextMenu</enum>
+              </property>
+              <property name="text">
+               <string>Send &amp;frame:</string>
+              </property>
+              <property name="buddy">
+               <cstring>dataToSend</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="dataToSend"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="rxLabel">
             <property name="text">
              <string>Received frame:</string>
+            </property>
+            <property name="buddy">
+             <cstring>textEdit</cstring>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QTextEdit" name="textEdit"/>
+           <widget class="QTextEdit" name="textEdit">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -113,28 +189,34 @@
           <item>
            <widget class="QPushButton" name="connectButton">
             <property name="text">
-             <string>Connect</string>
+             <string>&amp;Connect</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="disconnectButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
-             <string>Disconnect</string>
+             <string>&amp;Disconnect</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="sendFrameButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
-             <string>Send frame</string>
+             <string>Sen&amp;d frame</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="quitButton">
             <property name="text">
-             <string>Quit</string>
+             <string>&amp;Quit</string>
             </property>
            </widget>
           </item>
@@ -213,6 +295,9 @@
    </property>
   </action>
   <action name="actionDisconnect">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Disconnect</string>
    </property>

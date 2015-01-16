@@ -6,36 +6,48 @@
 #include <QTextStream>
 #include <iostream>
 
+/**
+ * @brief MainWindow::MainWindow
+ * @param parent
+ */
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
-  setupUi(this);
+  qDebug() << "In MainWindow constructor";
+  setupUi(this); // setup form
 
   // Quit application
   connect(quitButton, SIGNAL(clicked()), this, SLOT(close()));
+  connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
   // Connect to serial device
   connect(connectButton, SIGNAL(clicked()), this, SLOT(serialConnect()));
+  connect(disconnectButton, SIGNAL(clicked()), this, SLOT(serialDisconnect()));
+  connect(sendFrameButton, SIGNAL(clicked()), this, SLOT(sendData()));
 
-  connect(actionExit, SIGNAL(triggered()), this, SLOT(close()));
+  connect(ledOnButton, SIGNAL(clicked()), this, SLOT(turnOnLED()));
+  connect(ledOffButton, SIGNAL(clicked()), this, SLOT(turnOffLED()));
 
-//  connect(sendFrameButton, SIGNAL(clicked()), this, SLOT(sendData()));
-
-}
-
-MainWindow::~MainWindow(void) {
-  if (serial) {
-    serial->close();
-  }
-
-}
-
-void MainWindow::serialConnect(void) {
-
+  // Create the serial port
   serial = new QSerialPort(this);
 
   connect(serial, SIGNAL(readyRead()), this, SLOT(readData()));
   connect(serial, SIGNAL(error(QSerialPort::SerialPortError)), this,
           SLOT(handleError(QSerialPort::SerialPortError)));
 
+}
+/**
+ * @brief MainWindow::~MainWindow
+ */
+MainWindow::~MainWindow(void) {
+  qDebug() << "In MainWindow desctructor";
+  if (serial) {
+    serial->close();
+  }
+}
+/**
+ * @brief MainWindow::serialConnect This slot connects
+ * to a given serial port.
+ */
+void MainWindow::serialConnect(void) {
 
   serial->setPortName("ttyUSB0");
   serial->setBaudRate(QSerialPort::Baud115200);
@@ -45,44 +57,101 @@ void MainWindow::serialConnect(void) {
   serial->setFlowControl(QSerialPort::NoFlowControl);
 
   if (serial->open(QIODevice::ReadWrite)) {
+    qDebug() << "Opened serial device";
 
+    disconnectButton->setEnabled(true);
+    sendFrameButton->setEnabled(true);
+    actionDisconnect->setEnabled(true);
+    ledTab->setEnabled(true);
+
+    connectButton->setEnabled(false);
+    actionConnect->setEnabled(false);
   } else {
-
-      QMessageBox::critical(this, tr("Error"), serial->errorString());
+    qDebug() << "Cannot open port";
+    QMessageBox::critical(this, tr("Error"), serial->errorString());
   }
 }
+
+void MainWindow::serialDisconnect(void) {
+  if (serial) {
+    serial->close();
+  }
+
+  disconnectButton->setEnabled(false);
+  sendFrameButton->setEnabled(false);
+  actionDisconnect->setEnabled(false);
+  ledTab->setEnabled(false);
+
+  connectButton->setEnabled(true);
+  actionConnect->setEnabled(true);
+
+  qDebug() << "Closed serial device";
+}
+
 /**
  * @brief MainWindow::readData Reads data from serial device
  * @details Prints out every line to console
  */
 void MainWindow::readData(void) {
 
-  QByteArray data = serial->readLine();
-  rxData.append(data);
+  QByteArray newData = serial->readLine();
+  rxData.append(newData);
 
-  if (*(data.data()) == '\n') {
-      std::cout << "Hello: " << rxData.data() << std::endl;
-
-//        textEdit->setText();
-      textEdit->append(rxData.data());
-
-      rxData.clear();
-  }
+  textEdit->moveCursor(QTextCursor::End);
+  QString str(rxData.data());
+  textEdit->insertPlainText(str);
+  textEdit->moveCursor(QTextCursor::End);
+  rxData.clear();
 
 }
 
-//void MainWindow::sendData(void) {
+void MainWindow::sendData(void) {
 
-//  QByteArray a("Hello\n");
-//  serial->write(a);
-//  serial->waitForBytesWritten(-1);
+  static bool toggle;
+  QByteArray tmp;
 
-//}
+  toggle = !toggle;
 
+  if (toggle) {
+    tmp.append(":LED0 ON\r");
+  } else {
+    tmp.append(":LED0 OFF\r");
+  }
 
+  qint64 ret = serial->write(tmp);
+  if (ret == -1) {
+    qDebug() << "Error sending data";
+  } else if (ret >= 0 ) {
+    qDebug() << "Sent " << ret << " bytes";
+  }
+//    serial->waitForBytesWritten(-1);
+}
 
-void MainWindow::handleError(QSerialPort::SerialPortError error)
-{
+void MainWindow::turnOffLED(void) {
+
+  QByteArray tmp;
+  tmp.append(":LED0 OFF\r");
+  qint64 ret = serial->write(tmp);
+  if (ret == -1) {
+    qDebug() << "Error sending data";
+  } else if (ret >= 0 ) {
+    qDebug() << "Sent " << ret << " bytes";
+  }
+}
+
+void MainWindow::turnOnLED(void) {
+
+  QByteArray tmp;
+  tmp.append(":LED0 ON\r");
+  qint64 ret = serial->write(tmp);
+  if (ret == -1) {
+    qDebug() << "Error sending data";
+  } else if (ret >= 0 ) {
+    qDebug() << "Sent " << ret << " bytes";
+  }
+}
+
+void MainWindow::handleError(QSerialPort::SerialPortError error) {
   if (error == QSerialPort::ResourceError) {
       QMessageBox::critical(this, tr("Critical Error"), serial->errorString());
       serial->close();
